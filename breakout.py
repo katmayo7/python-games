@@ -11,31 +11,31 @@ pygame.key.set_repeat(50,50)
 
 fps = pygame.time.Clock()
 
-screen.fill((255,255,255))
+screen.fill((32, 32, 32))
 
 #paddle
 paddle_rect = pygame.Rect(150, 490, 75, 10)
-paddle = pygame.draw.rect(screen, (139,0,0), paddle_rect)
+paddle = pygame.draw.rect(screen, (255, 0, 127), paddle_rect)
 
 #ball
-ball_coord = [190, 484]
-ball = pygame.draw.circle(screen, (0,0,0), ball_coord, 7)
+ball_coord = [188, 482]
+vel = [3, 3]
+ball = pygame.draw.circle(screen, (255, 255, 255), ball_coord, 8)
 
 #bricks
 bricks = []
 for i in range(20, 110, 20):
   for j in range(0, 400, 50):
     bricks.append((j, i))
-  
-print bricks
 
-colors = [(244, 69, 66), (235, 244, 66), (66, 244, 75), (66, 244, 22), (176, 66, 244)]
+colors = [(255, 0, 0), (255, 255,  51), (51, 255, 51), (51, 255, 255), (178, 102, 255)]
 
 for b in bricks:
   c = (b[1]/20)-1
   pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
 
 direction = ''
+currX = 150
 pygame.display.update()
 
 #main game loop
@@ -55,31 +55,52 @@ while True:
         pygame.event.post(pygame.event.Event(pygame.QUIT))
         
   #update position of paddle
-  x = '' 
+  x = ''
   if direction == 'RIGHT':
     if paddle_rect.right + 10 <= 400:
       paddle_rect = paddle_rect.move(10, 0)
+      currX += 10
     else:
       paddle_rect = paddle_rect.move(-10, 0)
+      currX -= 10
       x = 'LEFT'
       
   if direction == 'LEFT':
     if paddle_rect.left - 10 >= 0:
       paddle_rect = paddle_rect.move(-10, 0)
+      currX -= 10
     else:
       paddle_rect = paddle_rect.move(10, 0)
+      currX += 10
       x = 'RIGHT'
 
   if x == 'RIGHT':
     direction = x
   if x == 'LEFT':
     direction = x
-    
-  #ball graphics
   
-  screen.fill((255,255,255))
-  paddle = pygame.draw.rect(screen, (139, 0, 0), paddle_rect)
-  ball = pygame.draw.circle(screen, (0,0,0), ball_coord, 7)
+  #ball movement
+  if ball_coord[0] + 8 >= 400:
+    vel[0] = -(vel[0])
+  if ball_coord[0] - 8 <= 0:
+    vel[0] = -(vel[0])
+  if ball_coord[1] + 8 >= 500:
+    vel[1] = -(vel[1])
+  if ball_coord[1] - 8 <= 0:
+    vel[1] = -(vel[1])
+  #ball hits paddle (150, 490) //km
+  if ball_coord[0] + 8 == paddle_rect.top:
+    vel[0] = -(vel[0])
+  #ball hits bricks
+  #if ball_coord
+  
+  ball_coord[0] = ball_coord[0] + vel[0]
+  ball_coord[1] = ball_coord[1] + vel[1]
+  
+  #redraw graphics
+  screen.fill((32, 32, 32))
+  paddle = pygame.draw.rect(screen, (255, 0, 127), paddle_rect)
+  ball = pygame.draw.circle(screen, (255, 255, 255), ball_coord, 8)
   for b in bricks:
     c = (b[1]/20)-1
     pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
