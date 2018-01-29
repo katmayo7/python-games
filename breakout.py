@@ -30,12 +30,12 @@ for i in range(20, 110, 20):
 
 colors = [(255, 0, 0), (255, 255,  51), (51, 255, 51), (51, 255, 255), (178, 102, 255)]
 
-for b in bricks:
-  c = (b[1]/20)-1
-  pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
+#for b in bricks:
+  #c = (b[1]/20)-1
+  #pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
 
 direction = ''
-currX = 150
+#currX = 150
 pygame.display.update()
 
 #main game loop
@@ -59,19 +59,19 @@ while True:
   if direction == 'RIGHT':
     if paddle_rect.right + 10 <= 400:
       paddle_rect = paddle_rect.move(10, 0)
-      currX += 10
+      #currX += 10
     else:
       paddle_rect = paddle_rect.move(-10, 0)
-      currX -= 10
+      #currX -= 10
       x = 'LEFT'
       
   if direction == 'LEFT':
     if paddle_rect.left - 10 >= 0:
       paddle_rect = paddle_rect.move(-10, 0)
-      currX -= 10
+      #currX -= 10
     else:
       paddle_rect = paddle_rect.move(10, 0)
-      currX += 10
+      #currX += 10
       x = 'RIGHT'
 
   if x == 'RIGHT':
@@ -84,15 +84,17 @@ while True:
     vel[0] = -(vel[0])
   if ball_coord[0] - 8 <= 0:
     vel[0] = -(vel[0])
-  if ball_coord[1] + 8 >= 500:
-    vel[1] = -(vel[1])
   if ball_coord[1] - 8 <= 0:
     vel[1] = -(vel[1])
-  #ball hits paddle (150, 490) //km
-  if ball_coord[0] + 8 == paddle_rect.top:
-    vel[0] = -(vel[0])
-  #ball hits bricks
-  #if ball_coord
+  #ball hits paddle
+  if ball_coord[1] + 8 == 490 and ball_coord[0] - 8 >= paddle_rect.topleft[0] and ball_coord[0] - 8 <= paddle_rect.topright[0]:
+    vel[1] = -(vel[1])
+  #ball bounces off bricks (can hit on any side of the bricks)
+  for b in bricks:
+    #check x coord
+    if ball_coord[0] - 8 >= b[0] and ball_coord[0] - 8 <= b[0] + 100:
+      vel[0] -(vel[0])
+    #check y coord
   
   ball_coord[0] = ball_coord[0] + vel[0]
   ball_coord[1] = ball_coord[1] + vel[1]
