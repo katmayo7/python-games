@@ -87,7 +87,7 @@ while True:
   if ball_coord[1] - 8 <= 0:
     vel[1] = -(vel[1])
   #ball hits paddle
-  if ball_coord[1] + 8 == 490 and ball_coord[0] - 8 >= paddle_rect.topleft[0] and ball_coord[0] - 8 <= paddle_rect.topright[0]:
+  if ball_coord[1] + 8 == 490 and ball_coord[0] - 8 >= paddle_rect.topleft[0] and ball_coord[0] + 8 <= paddle_rect.topright[0]:
     vel[1] = -(vel[1])
   #ball bounces off bricks (can hit on any side of the bricks)
   for b in bricks:
