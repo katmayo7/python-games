@@ -79,25 +79,32 @@ while True:
   if x == 'LEFT':
     direction = x
   
-  #ball movement
+  #brick boundaries
+  #km working on getting the rebounding off the purple layer correct
+  for b in bricks:
+    if ball_coord[1] - 8 == b[1] + 20 and ball_coord[0] - 8 >= b[0] and ball_coord[0] + 8 <= b[0] + 100:
+      vel[1] = -(vel[1])
+      
+  #screen boundaries
   if ball_coord[0] + 8 >= 400:
     vel[0] = -(vel[0])
   if ball_coord[0] - 8 <= 0:
     vel[0] = -(vel[0])
   if ball_coord[1] - 8 <= 0:
     vel[1] = -(vel[1])
+  
   #ball hits paddle
   if ball_coord[1] + 8 == 490 and ball_coord[0] - 8 >= paddle_rect.topleft[0] and ball_coord[0] + 8 <= paddle_rect.topright[0]:
     vel[1] = -(vel[1])
-  #ball bounces off bricks (can hit on any side of the bricks)
-  for b in bricks:
-    #check x coord
-    if ball_coord[0] - 8 >= b[0] and ball_coord[0] - 8 <= b[0] + 100:
-      vel[0] -(vel[0])
-    #check y coord
   
   ball_coord[0] = ball_coord[0] + vel[0]
   ball_coord[1] = ball_coord[1] + vel[1]
+  
+  #reset ball and paddle if the ball goes off screen
+  if ball_coord[1] + 8 >= 500:
+    paddle_rect = pygame.Rect(150, 490, 75, 10)
+    ball_coord = [188, 482]
+    vel = [3, 3]
   
   #redraw graphics
   screen.fill((32, 32, 32))
