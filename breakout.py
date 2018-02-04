@@ -30,9 +30,15 @@ for i in range(20, 110, 20):
 
 colors = [(255, 0, 0), (255, 255,  51), (51, 255, 51), (51, 255, 255), (178, 102, 255)]
 
-#for b in bricks:
+bricks2 = []
+for b in bricks:
   #c = (b[1]/20)-1
-  #pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
+  rec = pygame.Rect(b, (100, 20))
+  bricks2.append(rec)
+
+for b in bricks2:
+  c = (b[1]/20)-1
+  pygame.draw.rect(screen, colors[c], b)
 
 direction = ''
 #currX = 150
@@ -79,12 +85,23 @@ while True:
   if x == 'LEFT':
     direction = x
   
+  remove = []
   #brick boundaries
-  #km working on getting the rebounding off the purple layer correct
-  for b in bricks:
-    if ball_coord[1] - 8 == b[1] + 20 and ball_coord[0] - 8 >= b[0] and ball_coord[0] + 8 <= b[0] + 100:
-      vel[1] = -(vel[1])
-      
+  for b in bricks2:
+    if ball.colliderect(b):
+      if ball_coord[0]-8 == b.bottom:
+        vel[0] = -(vel[0])
+        remove.append(b)
+      elif ball_coord[0]+8 == b.top:
+        vel[0] = -(vel[0])
+        remove.append(b)
+      elif ball_coord[1]-8 == b.right:
+        vel[1] = -(vel[1])
+        remove.append(b)
+      else:
+        vel[1] = -(vel[1])
+        remove.append(b)
+        
   #screen boundaries
   if ball_coord[0] + 8 >= 400:
     vel[0] = -(vel[0])
@@ -110,9 +127,13 @@ while True:
   screen.fill((32, 32, 32))
   paddle = pygame.draw.rect(screen, (255, 0, 127), paddle_rect)
   ball = pygame.draw.circle(screen, (255, 255, 255), ball_coord, 8)
-  for b in bricks:
+  
+  for r in remove:
+    bricks2.remove(r)
+  
+  for b in bricks2:
     c = (b[1]/20)-1
-    pygame.draw.rect(screen, colors[c], pygame.Rect(b, (100, 20)))
+    pygame.draw.rect(screen, colors[c], b)
   
   pygame.display.update()
   
