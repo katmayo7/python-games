@@ -190,6 +190,9 @@ while True:
   for r in remove:
     bricks2.remove(r)
   
+  if len(bricks) == 0:
+    gameOver()
+    
   for b in bricks2:
     c = (b[1]/20)-1
     pygame.draw.rect(screen, colors[c], b)
