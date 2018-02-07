@@ -1,28 +1,29 @@
 #python 2.7
 #classic breakout game, move the paddle to bounce the ball and clear rows of bricks
-import pygame, sys
-from time import sleep
+import pygame, sys, time
 
 pygame.init()
 
 screen = pygame.display.set_mode((400,500))
 pygame.display.set_caption('Breakout')
 pygame.key.set_repeat(50,50)
+gameScore = 0
+lives = 3
 
 fps = pygame.time.Clock()
 
 screen.fill((32, 32, 32))
 
-#paddle
+#paddle set up
 paddle_rect = pygame.Rect(150, 490, 75, 10)
 paddle = pygame.draw.rect(screen, (255, 0, 127), paddle_rect)
 
-#ball
+#ball set up
 ball_coord = [188, 482]
 vel = [4, 4]
 ball = pygame.draw.circle(screen, (255, 255, 255), ball_coord, 8)
 
-#bricks
+#brick set up
 bricks = []
 for i in range(20, 110, 20):
   for j in range(0, 400, 50):
@@ -42,7 +43,7 @@ for b in bricks2:
 direction = ''
 pygame.display.update()
 
-"""
+#helper methods
 def check_bounds(ball_coord, vel):
   if ball_coord[0] + 8 >= 400:
     vel[0] = -(vel[0])
@@ -85,10 +86,22 @@ def move_ball(ball_coord, paddle_rect, vel):
   
   return ball_coord, vel
 
-def check_bricks(ball, ball_coord, bricks2):
+def check_bricks(ball, ball_coord, bricks2, gameScore):
   remove = []
   for b in bricks2:
     if ball.colliderect(b):
+      #account for score
+      if b.top == 20:
+        gameScore += 5
+      elif b.top == 40:
+        gameScore += 10
+      elif b.top == 60:
+        gameScore += 15
+      elif b.top == 80:
+        gameScore += 20
+      else:
+        gameScore += 25
+      #change ball velocity
       if ball_coord[0] - 8 == b.bottom:
         vel[0] = -(vel[0])
         remove.append(b)
@@ -102,23 +115,41 @@ def check_bricks(ball, ball_coord, bricks2):
         vel[1] = -(vel[1])
         remove.append(b)
         
-  return remove, vel
+  return remove, vel, gameScore
 
-def break_bricks(remove):
-  for r in remove:
-    bricks2.remove(r)
-  for b in bricks2:
-    c = (b[1]/20) - 1
-    pygame.draw.rect(screen, colors[c], b)
+def resetBall(ball_coord, lives):
+  paddle_rect = pygame.Rect(150, 490, 75, 10)
+  ball_coord = [188, 482]
+  vel = [3, 3]
+  lives -= 1
+  return paddle_rect, ball_coord, vel, lives
 
-def resetBall(ball_coord):
-  if ball_coord[1] + 8 >= 500:
-    paddle_rect = pygame.Rect(150, 490, 75, 10)
-    ball_coord = [188, 482]
-    vel = [3, 3]
-  return paddle_rect, ball_coord, vel
-"""
-
+#also handles displaying lives
+def score(choice=1):
+  scoreFont = pygame.font.SysFont('comicsansms', 16)
+  scoreScreen = scoreFont.render('Score: {0}'.format(gameScore), True, pygame.Color(255, 255, 255))
+  livesScreen = scoreFont.render('Lives: {0}'.format(lives), True, pygame.Color(255, 255, 255))
+  scoreRect = scoreScreen.get_rect()
+  livesRect = livesScreen.get_rect()
+  if choice == 1:
+    scoreRect.midtop = (35, 2)
+    livesRect.midtop = (355, 2)
+  screen.blit(scoreScreen, scoreRect)
+  screen.blit(livesScreen, livesRect)
+  
+def gameOver():
+  font = pygame.font.SysFont('comicsansms', 20)
+  lines = 'Game Over. Your score: {0}'.format(gameScore)
+  gameOverScreen = font.render(lines, True, pygame.Color(255, 255 , 255))
+  gameOverRect = gameOverScreen.get_rect()
+  gameOverRect.midtop = (200, 200)
+  screen.blit(gameOverScreen, gameOverRect)
+  pygame.display.flip()
+  time.sleep(10)
+  pygame.quit()
+  sys.exit()
+  
+  
 #main game loop
 while True:
   for event in pygame.event.get():
@@ -135,87 +166,35 @@ while True:
       else:
         pygame.event.post(pygame.event.Event(pygame.QUIT))
         
-  #update position of paddle
-  #direction, paddle_rect = move_paddle(direction, paddle_rect)
-  x = ''
-  if direction == 'RIGHT':
-    if paddle_rect.right + 5 <= 400:
-      paddle_rect = paddle_rect.move(5, 0)
-      #currX += 10
-    else:
-      paddle_rect = paddle_rect.move(-5, 0)
-      #currX -= 10
-      x = 'LEFT'
-      
-  if direction == 'LEFT':
-    if paddle_rect.left - 5 >= 0:
-      paddle_rect = paddle_rect.move(-5, 0)
-      #currX -= 10
-    else:
-      paddle_rect = paddle_rect.move(5, 0)
-      #currX += 10
-      x = 'RIGHT'
-
-  if x == 'RIGHT':
-    direction = x
-  if x == 'LEFT':
-    direction = x
-
-  #remove, vel = check_bricks(ball, ball_coord, bricks2)
-  remove = []
-  #brick boundaries
-  for b in bricks2:
-    if ball.colliderect(b):
-      if ball_coord[0]-8 == b.bottom:
-        vel[0] = -(vel[0])
-        remove.append(b)
-      elif ball_coord[0]+8 == b.top:
-        vel[0] = -(vel[0])
-        remove.append(b)
-      elif ball_coord[1]-8 == b.right:
-        vel[1] = -(vel[1])
-        remove.append(b)
-      else:
-        vel[1] = -(vel[1])
-        remove.append(b)
-        
-  #screen boundaries
-  #vel = check_bounds(ball_coord, vel)
-  if ball_coord[0] + 8 >= 400:
-    vel[0] = -(vel[0])
-  if ball_coord[0] - 8 <= 0:
-    vel[0] = -(vel[0])
-  if ball_coord[1] - 8 <= 0:
-    vel[1] = -(vel[1])
+  #paddle movement
+  direction, paddle_rect = move_paddle(direction, paddle_rect)
   
-  #ball hits paddle
-  #ball_coord, vel = move_ball(ball_coord, paddle_rect, vel)
-  if ball_coord[1] + 8 == 490 and ball_coord[0] - 8 >= paddle_rect.topleft[0] and ball_coord[0] + 8 <= paddle_rect.topright[0]:
-    vel[1] = -(vel[1])
-  
-  ball_coord[0] = ball_coord[0] + vel[0]
-  ball_coord[1] = ball_coord[1] + vel[1]
+  #check what the ball hits
+  remove, vel, gameScore = check_bricks(ball, ball_coord, bricks2, gameScore)
+  vel = check_bounds(ball_coord, vel)
+  ball_coord, vel = move_ball(ball_coord, paddle_rect, vel)
   
   #reset ball and paddle if the ball goes off screen
-  #paddle_rect, ball_coord, vel = resetBall(ball_coord)
   if ball_coord[1] + 8 >= 500:
-    paddle_rect = pygame.Rect(150, 490, 75, 10)
-    ball_coord = [188, 482]
-    vel = [3, 3]
+    paddle_rect, ball_coord, vel, lives = resetBall(ball_coord, lives)
+    
+  if lives == 0:
+    gameOver()
   
   #redraw graphics
   screen.fill((32, 32, 32))
   paddle = pygame.draw.rect(screen, (255, 0, 127), paddle_rect)
   ball = pygame.draw.circle(screen, (255, 255, 255), ball_coord, 8)
   
+  #account for change in bricks
   for r in remove:
     bricks2.remove(r)
   
   for b in bricks2:
     c = (b[1]/20)-1
     pygame.draw.rect(screen, colors[c], b)
-  #bricks2 = break_bricks(remove)
   
+  score()
   pygame.display.update()
   
   
