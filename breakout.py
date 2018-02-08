@@ -125,15 +125,14 @@ def resetBall(ball_coord, lives):
   return paddle_rect, ball_coord, vel, lives
 
 #also handles displaying lives
-def score(choice=1):
+def score():
   scoreFont = pygame.font.SysFont('comicsansms', 16)
   scoreScreen = scoreFont.render('Score: {0}'.format(gameScore), True, pygame.Color(255, 255, 255))
   livesScreen = scoreFont.render('Lives: {0}'.format(lives), True, pygame.Color(255, 255, 255))
   scoreRect = scoreScreen.get_rect()
   livesRect = livesScreen.get_rect()
-  if choice == 1:
-    scoreRect.midtop = (35, 2)
-    livesRect.midtop = (355, 2)
+  scoreRect.midtop = (35, 2)
+  livesRect.midtop = (355, 2)
   screen.blit(scoreScreen, scoreRect)
   screen.blit(livesScreen, livesRect)
   
