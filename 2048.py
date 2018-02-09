@@ -21,24 +21,32 @@ values = [2, 4]
 direction = ''
 gameScore = 0
 squares = []
+"""
 for x in range(15, 390, 95):
   for y in range(80, 390, 95):
     sq = pygame.Rect((x, y), (90, 90))
     squares.append(sq)
+"""
+
+squares.append(pygame.Rect((15, 80), (90, 90)))
 
 for s in squares:
   pygame.draw.rect(screen, (0, 0, 255), s)
 
 def movement(direction, squares):
   if direction == 'RIGHT':
-    pass
+    for i in range(len(squares)):
+      #check bounds
+      squares[i] = squares[i].move(40, 0)
   if direction == 'LEFT':
-    pass
+    for i in range(len(squares)):
+      squares[i] = squares[i].move(-40, 0)
   if direction == 'UP':
-    pass
+    for i in range(len(squares)):
+      squares[i] = squares[i].move(0, -35)
   if direction == 'DOWN':
-    pass
-  
+    for i in range(len(squares)):
+      squares[i] = squares[i].move(0, 35)
   return squares
   
 def score():
@@ -66,6 +74,7 @@ while True:
       pygame.quit()
       sys.exit()
     
+    direction = ''
     #get key direction
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_RIGHT:
