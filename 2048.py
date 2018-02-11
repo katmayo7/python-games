@@ -33,20 +33,41 @@ squares.append(pygame.Rect((15, 80), (90, 90)))
 for s in squares:
   pygame.draw.rect(screen, (0, 0, 255), s)
 
+#combine same numbered squares
+def combine():
+  pass
+
+def checkBounds(direction, square): 
+  #10 -> 395, 75 -> 460
+  if square.top - 40 == 75:
+    return -1
+  if square.bottom + 40 == 460:
+    return -1
+  if square.left - 40 == 10:
+    return -1
+  if square.right + 40 == 395:
+    return -1
+  return 0
+  
+#5 unit buffer between every one
 def movement(direction, squares):
   if direction == 'RIGHT':
     for i in range(len(squares)):
       #check bounds
-      squares[i] = squares[i].move(40, 0)
+      if checkBounds(direction, squares[i]) == 0:
+        squares[i] = squares[i].move(40, 0)
   if direction == 'LEFT':
     for i in range(len(squares)):
-      squares[i] = squares[i].move(-40, 0)
+      if checkBounds(direction, squares[i]) == 0:
+        squares[i] = squares[i].move(-40, 0)
   if direction == 'UP':
     for i in range(len(squares)):
-      squares[i] = squares[i].move(0, -35)
+      if checkBounds(direction, squares[i]) == 0:
+        squares[i] = squares[i].move(0, -35)
   if direction == 'DOWN':
     for i in range(len(squares)):
-      squares[i] = squares[i].move(0, 35)
+      if checkBounds(direction, squares[i]) == 0:
+        squares[i] = squares[i].move(0, 35)
   return squares
   
 def score():
